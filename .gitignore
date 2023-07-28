@@ -1,0 +1,4 @@
+#in our .gitignore file 
+**/.DS_Store
+static/
+.env
