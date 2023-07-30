@@ -12,13 +12,19 @@ from langchain.llms import OpenAI
 
 app = Flask(__name__)
 
-todos = ['TODO 1','TODO 2','TODO 3']
+def getId(videourl):
+    vidid=videourl.find('watch?v=')
+    VId = videourl[vidid+8:vidid+19]
+    if vidid==-1:
+        vidid=videourl.find('be/')
+        VId=videourl[vidid+3:]
+    return VId
 
 @app.route('/', methods=('GET','POST'))
 def index():
     if request.method == 'POST':
-        url = request.form['url']
-        loader = YoutubeLoader.from_youtube_url(url, add_video_info=True, language = 'es')
+        videoComplete = request.form['url']
+        loader = YoutubeLoader.from_youtube_url(("https://www.youtube.com/watch?v=" + getId(videoComplete)), add_video_info=True, language = 'es')
         result = loader.load()
         
         text_splitter = RecursiveCharacterTextSplitter(chunk_size=2000,chunk_overlap=0)
@@ -37,9 +43,6 @@ def index():
         return render_template('index.html',result = chain.run(texts_trim))
         
 
-    #user_ip = request.remote_addr
-    #response = make_response(redirect('/hello'))
-    #response.set_cookie('user_ip',user_ip)
     result = request.args.get('url')
     return render_template('index.html', result=result)
     
